@@ -3,7 +3,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from PIL import Image
 from cubo import cubo_func
-
+#from bike import draw_object, carregar_obj
 
 # Configurações iniciais da câmera
 def configure_camera():
@@ -39,7 +39,7 @@ def render():
 
 def main():
     glfw.init()
-    window = glfw.create_window(800, 600, "Visão Isométrica", None, None)
+    window = glfw.create_window(800, 600, "Trabalho de CG", None, None)
     
     if not window:
         glfw.terminate()
@@ -48,6 +48,10 @@ def main():
 
     glfw.make_context_current(window)
     
+    #arquivo = "D:\\trabalhoDeCG\\src\\objects\\bike\\bikee.obj"
+    #vertices, faces, normais, texturas = carregar_obj(arquivo)
+
+
     icon = "icon.jpg"
     glfw.set_window_icon(window, 1, Image.open(icon))
     
