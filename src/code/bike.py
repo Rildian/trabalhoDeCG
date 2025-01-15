@@ -1,72 +1,41 @@
-# import glfw
-# from OpenGL.GL import *
+from OpenGL.GL import *
 
-# def carregar_obj(arquivo_obj):
-#     vertices = []  # Lista de vértices
-#     faces = []     # Lista de faces (índices)
-#     normais = []   # Lista de normais
-#     texturas = []  # Lista de coordenadas de textura
+def load_obj(file_path):
+    vertices = []
+    faces = []
 
-#     with open(arquivo_obj, 'r') as arquivo:
-#         for linha in arquivo:
-#             if linha.startswith('v '):  # Vértice
-#                 partes = linha.strip().split()
-#                 x, y, z = map(float, partes[1:4])  # Extrai coordenadas
-#                 vertices.append((x, y, z))
+    with open(file_path, 'r') as file:
+        for line in file:
+            if line.startswith('v '):
+                parts = line.strip().split()
+                vertices.append([float(parts[1]), float(parts[2]), float(parts[3])])
+            elif line.startswith('f '):
+                parts = line.strip().split()
+                face = []
+                for part in parts[1:]:
+                    vertex_index = int(part.split('/')[0]) - 1
+                    face.append(vertex_index)
+                faces.append(face)
 
-#             elif linha.startswith('vn '):  # Normal
-#                 partes = linha.strip().split()
-#                 nx, ny, nz = map(float, partes[1:4])  # Extrai componentes
-#                 normais.append((nx, ny, nz))
+    return vertices, faces
 
-#             elif linha.startswith('vt '):  # Coordenadas de textura
-#                 partes = linha.strip().split()
-#                 u, v = map(float, partes[1:3])  # Extrai u, v
-#                 texturas.append((u, v))
+def center_and_scale(vertices):
+    min_vals = [min(coord[i] for coord in vertices) for i in range(3)]
+    max_vals = [max(coord[i] for coord in vertices) for i in range(3)]
 
-#             elif linha.startswith('f '):  # Face
-#                 partes = linha.strip().split()[1:]  # Remove "f"
-#                 face = []
-#                 for parte in partes:
-#                     indices = parte.split('/')
-#                     v_idx = int(indices[0]) - 1  # Índice do vértice
-#                     t_idx = int(indices[1]) - 1 if len(indices) > 1 and indices[1] else None  # Índice de textura
-#                     n_idx = int(indices[2]) - 1 if len(indices) > 2 and indices[2] else None  # Índice de normal
-#                     face.append((v_idx, t_idx, n_idx))
-#                 faces.append(face)
+    center = [(min_vals[i] + max_vals[i]) / 2.0 for i in range(3)]
+    scale = max(max_vals[i] - min_vals[i] for i in range(3))
 
-#     return vertices, faces, normais, texturas
+    for i in range(len(vertices)):
+        vertices[i] = [(vertices[i][j] - center[j]) / scale for j in range(3)]
 
-    
-# def draw_object(vertices, faces, normais, texturas):
-#     glBegin(GL_TRIANGLES)  # Inicia a definição de triângulos
-#     for face in faces:
-#         for vertex in face:
-#             v_idx, t_idx, n_idx = vertex
+def render(vertices, faces):
+    glColor3f(1.0, 0.0, 0.0)
+    glScalef(1.0, 1.0, 1.0)
 
-#             # Adiciona a textura, se disponível
-#             if t_idx is not None and texturas:
-#                 glTexCoord2fv(texturas[t_idx])
-
-#             # Adiciona a normal, se disponível
-#             if n_idx is not None and normais:
-#                 glNormal3fv(normais[n_idx])
-
-#             # Adiciona o vértice
-#             glVertex3fv(vertices[v_idx])
-#     glEnd()  # Finaliza a definição dos triângulos
-
-
-
-
-# arquivo = "D:\\trabalhoDeCG\\src\\objects\\bike\\bikee.obj"
-# vertices, faces, normais, texturas = carregar_obj(arquivo)
-# draw_object(vertices, faces, normais, texturas)
-
-
-
-# # print("Vértices:", vertices)
-# # print("Faces:", faces)
-# # print("Normais:", normais)
-# # print("Texturas:", texturas)
-
+    glBegin(GL_LINES)
+    for face in faces:
+        for i in range(len(face)):
+            glVertex3fv(vertices[face[i]])
+            glVertex3fv(vertices[face[(i + 1) % len(face)]])
+    glEnd()
