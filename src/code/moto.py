@@ -1,4 +1,10 @@
+import glfw
 from OpenGL.GL import *
+from OpenGL.GLUT import *
+
+rotation_x = 0.0
+rotation_y = 0.0
+
 
 def load_obj(file_path):
     vertices = []
@@ -19,6 +25,7 @@ def load_obj(file_path):
 
     return vertices, faces
 
+
 def center_and_scale(vertices):
     min_vals = [min(coord[i] for coord in vertices) for i in range(3)]
     max_vals = [max(coord[i] for coord in vertices) for i in range(3)]
@@ -29,9 +36,25 @@ def center_and_scale(vertices):
     for i in range(len(vertices)):
         vertices[i] = [(vertices[i][j] - center[j]) / scale for j in range(3)]
 
+def init():
+    glClearColor(1.0, 1.0, 1.0, 1.0)
+    glEnable(GL_DEPTH_TEST)
+
+
 def render(vertices, faces):
+    global rotation_x, rotation_y
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glColor3f(1.0, 0.0, 0.0)
-    glScalef(1.0, 1.0, 1.0)
+
+    glPushMatrix()
+
+    
+    glRotatef(rotation_x, 1.0, 0.0, 0.0)
+    glRotatef(rotation_y, 0.0, 1.0, 0.0)
+
+    
+    glScalef(1.0, 1.0, 1.0)  
 
     glBegin(GL_LINES)
     for face in faces:
@@ -39,3 +62,6 @@ def render(vertices, faces):
             glVertex3fv(vertices[face[i]])
             glVertex3fv(vertices[face[(i + 1) % len(face)]])
     glEnd()
+
+    glPopMatrix()
+
