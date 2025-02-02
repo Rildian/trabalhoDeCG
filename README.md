@@ -1,6 +1,6 @@
-<h1>Diretório de computaçao gráfica</h1>
-    <p>Alguns programas que fiz durante a disciplina de Computação gráfica ministrada
-        pelo professor Rafael Fernandes Ivo.
+<h1>Bike game</h1>
+    <p>Trabalho de computação gráfica envolvendo o tema bike feito pelos alunos Antônio, Bernado e Rildian na disciplina de computação
+        gráfica ministrada pelo professor Rafael Ivo.
     </p>
       <h2>Requisitos para compilar os arquivos</h2>
         <p>Python na versão 3.1x</p>
