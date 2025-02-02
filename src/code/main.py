@@ -3,6 +3,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from moto import load_obj, center_and_scale, render as render_moto
 from PIL import Image
+import os
 
 
 moto_pos = [1.0, 1.0, 1.0]
@@ -57,9 +58,12 @@ def render(vertices, faces):
 def main():
     global moto_pos
 
-    # Carregar o modelo da moto
-    obj_file_path = 'D:/trabalhoDeCG/src/objects/bike/moto_simple_2.obj'
-    vertices, faces = load_obj(obj_file_path)
+    # Carregar o modelo da moto, usando path absoluto
+    
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    bike_obj_file_path = os.path.join(script_dir, 'bike_object.obj')
+
+    vertices, faces = load_obj(bike_obj_file_path)
     center_and_scale(vertices)
 
     if not glfw.init():
