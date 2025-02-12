@@ -3,7 +3,7 @@ from OpenGL.GLU import *
 from texture import Texture  # Certifique-se de importar a classe Texture
 import os
 
-class Cubo:
+class Ceu:
     vertices = [
         [-0.5, -0.5, -0.5],  # Frente inferior esquerda
         [0.5, -0.5, -0.5],   # Frente inferior direita
@@ -17,21 +17,22 @@ class Cubo:
 
     faces = [
         [0, 1, 2, 3],  # Face frontal
-        [4, 5, 6, 7],  # Face traseira
-        [0, 1, 5, 4],  # Face inferior
-        [2, 3, 7, 6],  # Face superior
-        [0, 3, 7, 4],  # Face esquerda
-        [1, 2, 6, 5],  # Face direita
+        [5, 4, 7, 6],  # Face traseira
+        [4, 5, 1, 0],  # Face inferior
+        [3, 2, 6, 7],  # Face superior
+        [4, 0, 3, 7],  # Face esquerda (ajustada)
+        [1, 5, 6, 2],  # Face direita (ajustada)
     ]
 
     tex_coords = [
-        [(0, 0), (1, 0), (1, 1), (0, 1)],  # Frente
-        [(0, 0), (1, 0), (1, 1), (0, 1)],  # Trás
-        [(0, 0), (1, 0), (1, 1), (0, 1)],  # Inferior
-        [(0, 0), (1, 0), (1, 1), (0, 1)],  # Superior
-        [(0, 0), (1, 0), (1, 1), (0, 1)],  # Esquerda
-        [(0, 0), (1, 0), (1, 1), (0, 1)],  # Direita
+    [(0.25, 0.33), (0.5, 0.33), (0.5, 0.66), (0.25, 0.66)],  # Frente
+    [(0.75, 0.33), (1.0, 0.33), (1.0, 0.66), (0.75, 0.66)],  # Trás
+    [(0.25, 0.0), (0.5, 0.0), (0.5, 0.33), (0.25, 0.33)],  # Inferior
+    [(0.255, 0.66), (0.495, 0.66), (0.495, 1.0), (0.255, 1.0)],  # Superior
+    [(0.0, 0.33), (0.25, 0.33), (0.25, 0.66), (0.0, 0.66)],  # Esquerda (Ajustado)
+    [(0.5, 0.33), (0.75, 0.33), (0.75, 0.66), (0.5, 0.66)],  # Direita (Ajustado)
     ]
+
 
     def __init__(self, texture_path="textura.png", initial_position=[0.0, 0.0, 0.0]):
         self.position = initial_position.copy()
@@ -52,7 +53,7 @@ class Cubo:
         glTranslatef(self.position[0] + self.valor[0] + x, 
                     self.position[1] + self.valor[1] + y, 
                     self.position[2] + self.valor[2] + z)
-        glScale(1 * tamanho, 1 * tamanho, 1 * tamanho)
+        glScale(tamanho, tamanho, tamanho)
         glRotatef(self.angulo, 0, 1, 0)  # Rotação 3D ao redor do eixo Y
 
         self.texture.bind()  # Ativa a textura
