@@ -8,7 +8,7 @@ class Roda:
         self.valor = [0.0, 0.0, 0.0]
         self.angulo = 0.0
         self.vertices = self.calcular_vertices()
-        
+
 
     def calcular_vertices(self):
         """Calcula os vértices do prisma hexagonal."""
@@ -41,7 +41,7 @@ class Roda:
         self.valor[2] += z
 
     def update(self):
-        self.angulo = (self.angulo - 0.03) % 360
+        self.angulo = (self.angulo - 0.5) % 360
 
     def draw(self, x, y, z, tamanho):
         glColor3f(0.5, 0.5, 0.5)

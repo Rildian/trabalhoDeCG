@@ -46,6 +46,7 @@ class Cubo:
 
     def update(self):
         self.angulo = (self.angulo + 0.03) % 360
+        print(self.valor)
 
     def draw(self, x, y, z, tamanho):
         glPushMatrix()

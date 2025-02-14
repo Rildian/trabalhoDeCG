@@ -9,18 +9,21 @@ class Chao:
         self.valor = [0.0, 0.0, 0.0]
         self.angulo = 0.0
         self.texture = Texture(texture_path)
+        self.movimento = 0
+        self.contador= 0
+        self.velocidade = 1
 
     # Definição dos vértices do chão
     vertices = [
-        [100, -1, -50],
-        [100, -1, 50],
-        [-100, -1, 50],
-        [-100, -1, -50]
+        [400, -1, -25],
+        [400, -1, 25],
+        [-400, -1, 25],
+        [-400, -1, -25]
     ]
 
     # Coordenadas de textura (UV) para o chão
     tex_coords = [
-        [(0, 0), (1, 0), (1, 1), (0, 1)]  # Apenas uma face, com 4 vértices
+        [(1, 0), (1, 1), (0, 1), (0, 0)]  # Apenas uma face, com 4 vértices
     ]
 
     def mover(self, x: float, y: float, z: float):
@@ -29,14 +32,23 @@ class Chao:
         self.valor[2] += z
 
     def update(self):
-        self.angulo = (self.angulo + 0.03) % 360
+        self.valor[0] -= self.velocidade
 
-    def draw(self):
+    def set_posicao(self, x, y, z):
+        self.valor[0] = x
+        self.valor[1] = y
+        self.valor[2] = z
+
+    
+    def get_aceleracao(self):
+        return self.velocidade
+
+    def draw(self, x, y, z):
         glPushMatrix()
         # Movimentação do objeto
-        glTranslatef(self.position[0] + self.valor[0], 
-                    self.position[1] + self.valor[1], 
-                    self.position[2] + self.valor[2])
+        glTranslatef(self.position[0] + self.valor[0] + x, 
+                    self.position[1] + self.valor[1] + y, 
+                    self.position[2] + self.valor[2] + z)
 
         self.texture.bind()  # Ativa a textura
         glEnable(GL_TEXTURE_2D)
