@@ -51,7 +51,7 @@ class Roda:
         self.valor[2] += z
 
     def update(self):
-        self.angulo = (self.angulo - 2) % 360
+        self.angulo = (self.angulo + 2) % 360
 
     def draw(self, x, y, z, tamanho):
         glColor3f(0.3, 0.3, 0.3)

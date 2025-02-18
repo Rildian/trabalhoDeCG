@@ -1,5 +1,6 @@
 from OpenGL.GL import *
 from OpenGL.GLU import *
+import glm
 from texture import Texture  # Certifique-se de importar a classe Texture
 import os
 
@@ -34,15 +35,13 @@ class Ceu:
     ]
 
 
-    def __init__(self, texture_path="textura.png", initial_position=[0.0, 0.0, 0.0]):
-        self.position = initial_position.copy()
-        self.valor = [0.0, 0.0, 0.0]
+    def __init__(self, texture_path="textura.png", initial_position= glm.vec3(0.0, 0.0, 0.0)):
+        self.position = initial_position
+        self.valor = glm.vec3(0.0, 0.0, 0.0)
         self.angulo = 0.0
         self.texture = Texture(texture_path)
 
-    def mover(self, x: float, y: float, z: float):
-        self.valor[0] += x
-        self.valor[1] += y
+    def set_posicao(self, z):
         self.valor[2] += z
 
     def update(self):

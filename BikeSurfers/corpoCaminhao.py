@@ -4,16 +4,16 @@ from texture import Texture  # Certifique-se de importar a classe Texture
 import glm
 import os
 
-class Cubo:
+class Corpo:
     vertices = [
-        [-0.5, -0.5, -0.5],  # Frente inferior esquerda
-        [0.5, -0.5, -0.5],   # Frente inferior direita
-        [0.5, 0.5, -0.5],    # Frente superior direita
-        [-0.5, 0.5, -0.5],   # Frente superior esquerda
-        [-0.5, -0.5, 0.5],   # Trás inferior esquerda
-        [0.5, -0.5, 0.5],    # Trás inferior direita
-        [0.5, 0.5, 0.5],     # Trás superior direita
-        [-0.5, 0.5, 0.5],    # Trás superior esquerda
+        [-6, -6, -8],  # Frente inferior esquerda
+        [6, -6, -8],   # Frente inferior direita
+        [6, 6, -8],    # Frente superior direita
+        [-6, 6, -8],   # Frente superior esquerda
+        [-6, -6, 8],   # Trás inferior esquerda
+        [6, -6, 8],    # Trás inferior direita
+        [6, 6, 8],     # Trás superior direita
+        [-6, 6, 8],    # Trás superior esquerda
     ]
 
     faces = [
@@ -21,8 +21,8 @@ class Cubo:
         [4, 5, 6, 7],  # Face traseira
         [0, 1, 5, 4],  # Face inferior
         [2, 3, 7, 6],  # Face superior
-        [0, 3, 7, 4],  # Face esquerda
-        [1, 2, 6, 5],  # Face direita
+        [0, 4, 7, 3],  # Face esquerda
+        [5, 1, 2, 6],  # Face direita
     ]
 
     tex_coords = [
@@ -34,8 +34,9 @@ class Cubo:
         [(0, 0), (1, 0), (1, 1), (0, 1)],  # Direita
     ]
 
+
     def __init__(self, texture_path="textura.png", initial_position=glm.vec3(0,0,0)):
-        self.position = initial_position.copy()
+        self.position = initial_position
         self.valor = glm.vec3(0,0,0)
         self.angulo = 0.0
         self.texture = Texture(texture_path)
@@ -56,14 +57,15 @@ class Cubo:
 
     def draw(self, x, y, z, tamanho):
         glPushMatrix()
+        glColor3f(0.5, 0.5, 0.5)
         glTranslatef(self.position[0] + self.valor[0] + x, 
                     self.position[1] + self.valor[1] + y, 
                     self.position[2] + self.valor[2] + z)
         glScale(1 * tamanho, 1 * tamanho, 1 * tamanho)
         glRotatef(self.angulo, 0, 1, 0)  # Rotação 3D ao redor do eixo Y
 
-        self.texture.bind()  # Ativa a textura
-        glEnable(GL_TEXTURE_2D)
+        #self.texture.bind()  # Ativa a textura
+        #glEnable(GL_TEXTURE_2D)
 
         # Coordenadas de textura (UV) para cada face
         
@@ -74,7 +76,7 @@ class Cubo:
                 glVertex3fv(self.vertices[vertex])  # Define a posição do vértice
         glEnd()
 
-        glDisable(GL_TEXTURE_2D)
-        self.texture.unbind()  # Desativa a textura
+        #glDisable(GL_TEXTURE_2D)
+        #self.texture.unbind()  # Desativa a textura
 
-        glPopMatrix()
+        glPopMatrix()#

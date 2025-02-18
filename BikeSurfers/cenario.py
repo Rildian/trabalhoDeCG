@@ -10,8 +10,7 @@ from terra import Terra
 
 class Cenario:
     def __init__(self, initial_position=[0.0, 0.0, 0.0]):
-        self.position = initial_position.copy()
-        self.angulo = 0.0
+        self.position = initial_position
         self.valor = initial_position
         self.placa = Placa(texture_path = "Pare.jpg")
         self.chao1 = Chao(texture_path = "asfalto.jpg")

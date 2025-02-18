@@ -5,37 +5,36 @@ from OpenGL.GLUT import *
 import numpy as np
 import math
 from roda import Roda
-from corpo import Corpo
-from peca import Peca
-from guidon import Guidon
+from corpo_moto import Corpo
+from peca_moto import Peca
+from guidon_moto import Guidon
 from esfera import Esfera
 from escapamento import Escapamento
 
 class Moto:
-    def __init__(self, initial_position=[0.0, 0.0, 0.0]):
-        self.position = initial_position.copy()
+    def __init__(self, initial_position= glm.vec3(0.0, 0.0, 0.0)):
+        self.position = initial_position
         self.roda = Roda()
         self.corpo = Corpo()
         self.peca = Peca()
         self.guidon = Guidon()
         self.farol = Esfera()
         self.escapamento = Escapamento()
-        self.p = 0
+        self.p = 0.5
 
         self.angulo = 0.0
         self.valor = glm.vec3(0,0,0)
 
-    def mover(self, x):
-        self.p = x
+    def mover(self,x):
+        if self.p + x >= 0 and self.p + x <= 1:
+            self.p += x
 
-    def trajeto(self, a, b):
-        inicio = glm.vec3(a[0], a[1], a[2])
-        fim = glm.vec3(b[0], b[1], b[2])
-        pos = (1 - self.p)*inicio + self.p*fim
-        self.valor = pos
+    def get_posicao(self):
+        return self.position + self.valor
 
     def update(self):
-        self.trajeto([0,0,-13], [0,0,13])
+        self.valor = glm.mix([-360,0,-23],[-360,0,23], self.p)
+        print(f"Moto{self.valor}")
         self.roda.update()
 
     def draw(self):

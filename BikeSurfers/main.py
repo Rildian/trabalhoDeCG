@@ -1,16 +1,12 @@
 import glfw
 from OpenGL.GL import *
 from OpenGL.GLU import *
-import numpy as np
 from PIL import Image
-from esfera import Esfera
 from cubo import Cubo
 from moto import Moto
-from chao import Chao
-from ceu import Ceu
-from terra import Terra
 from cenario import Cenario
-import os
+from camera import Camera
+from obstaculos import Obstaculos
 
 moto = None
 
@@ -33,172 +29,80 @@ def init_opengl():
     glClearColor(1, 1, 1, 1)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    glFrustum(-1, 1, -1, 1, 1, 2000)
+    glFrustum(-1, 1, -1, 1, 1, 1000)
     glMatrixMode(GL_MODELVIEW)
-
 
 def load_texture(image_path):
     image = Image.open(image_path)
     glfw.set_window_icon(window, 1, image)
 
-def setup_callbacks(window):
+def setup_callbacks(window, camera):
     glfw.set_key_callback(window, key_callback)
-    glfw.set_cursor_pos_callback(window, mouse_callback)
-
-def circulo(x, y, raio, segments):
-    glColor3f(0, 1, 1)
-    glBegin(GL_TRIANGLE_FAN)
-    glVertex2f(x, y)
-    for i in range(segments + 1):
-        angle = 2 * np.pi * i/segments
-        glVertex2f(x + np.cos(angle) * raio, y + np.sin(angle) * raio)
-    glEnd()
-
-def ajustar_valor(valor: int, ajuste: int) -> int:
-    novo_valor = valor + ajuste
-    return max(0, min(2, novo_valor))
-
-def ajustar_posicao(valor: int):
-    global posicao, t
-    if posicao == 0:
-        if valor > 0:
-            posicao += 1
-            moto.mover(0.5)
-            
-    elif posicao == 2:
-        if valor < 0:
-            posicao -= 1
-            moto.mover(0.5)
-    elif posicao == 1:
-        if valor > 0:
-            posicao = ajustar_valor(posicao, valor)
-            moto.mover(1)
-        else:
-            posicao = ajustar_valor(posicao, valor)
-            moto.mover(0)
-        
-        
-def camera():
-    global camera_pos, camera_front, camera_up
-    glLoadIdentity()
-    target = camera_pos + camera_front * 2
-    gluLookAt(*camera_pos, *target, *camera_up)
-    print(camera_pos)
-    print(camera_front)
+    glfw.set_cursor_pos_callback(window, camera.mouse_callback)
 
 def key_callback(window, key, scancode, action, mods):
     if action == glfw.PRESS:
         keys[key] = True
-        if key == glfw.KEY_LEFT:
-            ajustar_posicao(-1)
-        elif key == glfw.KEY_RIGHT:
-            ajustar_posicao(1)
     elif action == glfw.RELEASE:
         keys[key] = False
 
-def process_input():
-    global camera_pos, camera_front, camera_up, camera_speed, cursor_disabled, esc_pressed, first_mouse, posicao
-
-    if keys.get(glfw.KEY_W, False):
-        camera_pos += camera_speed * camera_front
-    if keys.get(glfw.KEY_S, False):
-        camera_pos -= camera_speed * camera_front
-    if keys.get(glfw.KEY_A, False):
-        camera_pos -= np.cross(camera_front, camera_up) * camera_speed
-    if keys.get(glfw.KEY_D, False):
-        camera_pos += np.cross(camera_front, camera_up) * camera_speed
-    if keys.get(glfw.KEY_UP, False):
-        sergio.mover(0.1,0,0)
-    if keys.get(glfw.KEY_DOWN, False):
-        sergio.mover(-0.1,0,0)
-    if keys.get(glfw.KEY_LEFT, False):
-        sergio.mover(0,0,-0.1)
-    if keys.get(glfw.KEY_RIGHT, False):
+def process_input(camera):
+    global cursor_disabled, esc_pressed, first_mouse
+    camera.process_input(keys)
+    if glfw.get_key(window, glfw.KEY_RIGHT) == glfw.PRESS:
         sergio.mover(0,0,0.1)
-
-    
-    camera_speed = 0.1 if keys.get(glfw.KEY_LEFT_SHIFT, False) else 0.01
+    if glfw.get_key(window, glfw.KEY_LEFT) == glfw.PRESS:
+        sergio.mover(0,0,-0.1)
+    if glfw.get_key(window, glfw.KEY_UP) == glfw.PRESS:
+        sergio.mover(0.1,0,0)
+    if glfw.get_key(window, glfw.KEY_DOWN) == glfw.PRESS:
+        sergio.mover(-0.1,0,0)
+    if glfw.get_key(window, glfw.KEY_A) == glfw.PRESS:
+        moto.mover(-0.005)
+    if glfw.get_key(window, glfw.KEY_D) == glfw.PRESS:
+        moto.mover(0.005)
     
     if glfw.get_key(window, glfw.KEY_ESCAPE) == glfw.PRESS and not esc_pressed:
-        cursor_disabled = not cursor_disabled
-        mode = glfw.CURSOR_DISABLED if cursor_disabled else glfw.CURSOR_NORMAL
-        glfw.set_input_mode(window, glfw.CURSOR, mode)
+        camera.toggle_cursor(window)
         esc_pressed = True
-        first_mouse = cursor_disabled
     elif glfw.get_key(window, glfw.KEY_ESCAPE) == glfw.RELEASE:
         esc_pressed = False
 
-
-        
-
-def mouse_callback(window, xpos, ypos):
-    global yaw, pitch, last_x, last_y, first_mouse, camera_front, cursor_disabled, sensitivity
-    
-    if not cursor_disabled:
-        return
-    
-    if first_mouse:
-        last_x, last_y = xpos, ypos
-        first_mouse = False
-    
-    xoffset, yoffset = (xpos - last_x) * sensitivity, (last_y - ypos) * sensitivity
-    last_x, last_y = xpos, ypos
-    
-    yaw, pitch = yaw + xoffset, max(min(pitch + yoffset, 89.0), -89.0)
-    
-    direction = np.array([
-        np.cos(np.radians(yaw)) * np.cos(np.radians(pitch)),
-        np.sin(np.radians(pitch)),
-        np.sin(np.radians(yaw)) * np.cos(np.radians(pitch))
-    ])
-    camera_front[:] = direction / np.linalg.norm(direction)
-
-def render():
+def render(camera):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    camera()
-    #planet.draw(5, 10, 10, 5, 5, -5)
-    #planet.draw(5, 10, 10, 0, 0, 0)
+    camera.update_view()
     sergio.draw(0, 0, 0, 5)
     moto.draw()
     cenario.draw()
+    obstaculo.draw()
 
 def update():
-    sergio.update()
-    planet.update()
+    #sergio.update()
     moto.update()
     cenario.update()
-
-
+    obstaculo.update()
+    camera.set_position(moto.get_posicao()[0] - 20,moto.get_posicao()[1] + 10 ,moto.get_posicao()[2] )
 
 def main():
-    global window, camera_pos, camera_front, camera_up, camera_speed, yaw, pitch
-    global first_mouse, cursor_disabled, esc_pressed, sensitivity, last_x, last_y
-    global planet, sergio, moto, keys, chao, chao2, ceu, posicao, pos, pos2, terra, terra1, cenario
+    global window, keys, moto, sergio, cenario, camera, obstaculo
     
-    width, height = 1000,1000
+    width, height = 1000, 1000
     window = init_glfw(width, height, "Elf Stunden auf der Rennstrecke")
     init_opengl()
     load_texture("textura.png")
-    setup_callbacks(window)
-
-
-    keys = {}
-    camera_pos = np.array([-377.65081729,   20.68805322,   15.33386139])
-    camera_front = np.array([ 0.88853622, -0.26387305, -0.37533239])
-    camera_up = np.array([0.0, 1.0, 0.0])
-    camera_speed, yaw, pitch = 0.01, -90, 0.0
-    first_mouse, cursor_disabled, esc_pressed = True, False, False
-    sensitivity, last_x, last_y = 0.1, width / 2, height / 2
-    posicao = 0
     
-    planet = Esfera()
-    moto = Moto([-360,0,0])
-    sergio = Cubo(texture_path = "textura.png")
+    keys = {}
+    camera = Camera()
+    setup_callbacks(window, camera)
+    
+    moto = Moto()
+    sergio = Cubo(texture_path="textura.png", initial_position=[-360, 0, 0])
     cenario = Cenario()
+    obstaculo = Obstaculos()
     
     while not glfw.window_should_close(window):
-        process_input()
-        render()
+        process_input(camera)
+        render(camera)
         update()
         glfw.swap_buffers(window)
         glfw.poll_events()
