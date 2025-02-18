@@ -9,6 +9,7 @@ from moto import Moto
 from chao import Chao
 from ceu import Ceu
 from terra import Terra
+from cenario import Cenario
 import os
 
 moto = None
@@ -58,26 +59,25 @@ def ajustar_valor(valor: int, ajuste: int) -> int:
     return max(0, min(2, novo_valor))
 
 def ajustar_posicao(valor: int):
-    global posicao
+    global posicao, t
     if posicao == 0:
         if valor > 0:
             posicao += 1
-            moto.mover(0,0,16.6)
+            moto.mover(0.5)
+            
     elif posicao == 2:
         if valor < 0:
             posicao -= 1
-            moto.mover(0,0,-16.6)
+            moto.mover(0.5)
     elif posicao == 1:
         if valor > 0:
             posicao = ajustar_valor(posicao, valor)
-            moto.mover(0,0,16.6)
+            moto.mover(1)
         else:
             posicao = ajustar_valor(posicao, valor)
-            moto.mover(0,0,-16.6)
+            moto.mover(0)
         
         
-
-
 def camera():
     global camera_pos, camera_front, camera_up
     glLoadIdentity()
@@ -115,12 +115,7 @@ def process_input():
         sergio.mover(0,0,-0.1)
     if keys.get(glfw.KEY_RIGHT, False):
         sergio.mover(0,0,0.1)
-    #if keys.get(glfw.KEY_UP, False):
-        #moto.mover(0.1, 0.0, 0.0)
-    #if keys.get(glfw.KEY_DOWN, False):
-        #moto.mover(-0.1, 0.0, 0.0)
-    if keys.get(glfw.KEY_SPACE, False):
-        moto.mover(0.0, 0.0, 0.0)
+
     
     camera_speed = 0.1 if keys.get(glfw.KEY_LEFT_SHIFT, False) else 0.01
     
@@ -133,20 +128,6 @@ def process_input():
     elif glfw.get_key(window, glfw.KEY_ESCAPE) == glfw.RELEASE:
         esc_pressed = False
 
-def floor_loop():
-    global pos, pos2
-    print(pos)
-    print(pos2)
-    pos[0] -= chao.get_aceleracao()
-    pos2[0] -= chao2.get_aceleracao()
-    if pos[0] == -1600:
-        chao.set_posicao(800, 0, 0)
-        terra.set_posicao(800,0,0)
-        pos[0] = 0
-    if pos2[0] == -1600:
-        chao2.set_posicao(0, 0, 0)
-        terra1.set_posicao(0,0,0)
-        pos2[0] = 0
 
         
 
@@ -179,26 +160,20 @@ def render():
     #planet.draw(5, 10, 10, 0, 0, 0)
     sergio.draw(0, 0, 0, 5)
     moto.draw()
-    chao.draw(0 ,0, 0)
-    chao2.draw(800 ,0, 0)
-    ceu.draw(0,0,0,800)
-    terra.draw(0,398,0)
-    terra1.draw(800,398,0)
+    cenario.draw()
 
 def update():
     sergio.update()
     planet.update()
-    moto.roda.update()
-    chao.update()
-    chao2.update()
-    terra1.update()
-    terra.update()
-    floor_loop()
+    moto.update()
+    cenario.update()
+
+
 
 def main():
     global window, camera_pos, camera_front, camera_up, camera_speed, yaw, pitch
     global first_mouse, cursor_disabled, esc_pressed, sensitivity, last_x, last_y
-    global planet, sergio, moto, keys, chao, chao2, ceu, posicao, pos, pos2, terra, terra1
+    global planet, sergio, moto, keys, chao, chao2, ceu, posicao, pos, pos2, terra, terra1, cenario
     
     width, height = 1000,1000
     window = init_glfw(width, height, "Elf Stunden auf der Rennstrecke")
@@ -208,24 +183,18 @@ def main():
 
 
     keys = {}
-    camera_pos = np.array([-23.97089551,  21.73997613,  15.72847116])
-    camera_front = np.array([ 0.62827279, -0.64278761, -0.43828917])
+    camera_pos = np.array([-377.65081729,   20.68805322,   15.33386139])
+    camera_front = np.array([ 0.88853622, -0.26387305, -0.37533239])
     camera_up = np.array([0.0, 1.0, 0.0])
     camera_speed, yaw, pitch = 0.01, -90, 0.0
     first_mouse, cursor_disabled, esc_pressed = True, False, False
     sensitivity, last_x, last_y = 0.1, width / 2, height / 2
-    posicao = 1
+    posicao = 0
     
-    pos = [-800,0,0]
-    pos2 = [0,0,0]
     planet = Esfera()
-    moto = Moto()
-    terra = Terra(texture_path = "skybox.png")
-    terra1 = Terra(texture_path = "skybox.png")
+    moto = Moto([-360,0,0])
     sergio = Cubo(texture_path = "textura.png")
-    chao = Chao(texture_path = "asfalto.jpg")
-    chao2 = Chao(texture_path = "asfalto.jpg")
-    ceu = Ceu(texture_path = "skybox.png")
+    cenario = Cenario()
     
     while not glfw.window_should_close(window):
         process_input()

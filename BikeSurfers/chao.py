@@ -11,7 +11,6 @@ class Chao:
         self.texture = Texture(texture_path)
         self.movimento = 0
         self.contador= 0
-        self.velocidade = 1
 
     # Definição dos vértices do chão
     vertices = [
@@ -31,17 +30,13 @@ class Chao:
         self.valor[1] += y
         self.valor[2] += z
 
-    def update(self):
-        self.valor[0] -= self.velocidade
+    def update(self, velocidade):
+        self.valor[0] -= velocidade
 
     def set_posicao(self, x, y, z):
         self.valor[0] = x
         self.valor[1] = y
         self.valor[2] = z
-
-    
-    def get_aceleracao(self):
-        return self.velocidade
 
     def draw(self, x, y, z):
         glPushMatrix()

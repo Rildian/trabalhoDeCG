@@ -45,6 +45,8 @@ class Peca:
         self.valor[1] += y
         self.valor[2] += z
 
+    
+
     def draw(self, x, y, z, tamanho_x, tamanho_y, tamanho_z):
         glPushMatrix()
         glColor3f(0.3, 0.3, 0.3)

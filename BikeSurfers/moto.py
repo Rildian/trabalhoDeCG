@@ -1,4 +1,5 @@
 import glfw
+import glm
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 import numpy as np
@@ -19,45 +20,33 @@ class Moto:
         self.guidon = Guidon()
         self.farol = Esfera()
         self.escapamento = Escapamento()
+        self.p = 0
 
         self.angulo = 0.0
-        self.valor = initial_position
+        self.valor = glm.vec3(0,0,0)
 
-    def mover(self, x: float, y: float, z: float):
-        self.valor[0] += x
-        self.valor[1] += y
-        self.valor[2] += z
+    def mover(self, x):
+        self.p = x
+
+    def trajeto(self, a, b):
+        inicio = glm.vec3(a[0], a[1], a[2])
+        fim = glm.vec3(b[0], b[1], b[2])
+        pos = (1 - self.p)*inicio + self.p*fim
+        self.valor = pos
 
     def update(self):
-        self.angulo = (self.angulo - 0.05) % 360
-
-    def draw_roda(self, x, y, z, tamanho):
-        self.roda.draw(x, y, z, tamanho)
-
-    def draw_corpo(self, x, y, z, tamanho):
-        self.corpo.draw(x, y, z, tamanho)
-
-    def draw_peca(self, x, y, z, a, b, c):
-        self.peca.draw(x, y, z, a, b, c)
-
-    def draw_guidon(self, x, y, z):
-        self.guidon.draw(x, y, z)
-
-    def draw_farol(self,raio, lat, lon, x, y, z):
-        self.farol.draw(raio, lat, lon, x, y, z)
-    
-    def draw_escapamento(self, x, y, z, a, b, c):
-        self.escapamento.draw(x, y, z, a, b, c)
+        self.trajeto([0,0,-13], [0,0,13])
+        self.roda.update()
 
     def draw(self):
-        self.draw_roda(self.valor[0] + 6, self.valor[1] + 1, self.valor[2] + 0, 5)
-        self.draw_roda(self.valor[0] - 3, self.valor[1] + 1, self.valor[2] + 0, 5)
-        self.draw_corpo(self.valor[0] + 3, self.valor[1] + 1.5, self.valor[2] + 0, 5)
-        self.draw_peca(self.valor[0] + 4, self.valor[1] + 2, self.valor[2] + 0.4, 4, 0.5, 0.25)
-        self.draw_peca(self.valor[0] + 4, self.valor[1] + 2, self.valor[2] + -0.4, 4, 0.5, 0.25)
-        self.draw_guidon(self.valor[0] + 4, self.valor[1] + 4, self.valor[2] + 0)
-        self.draw_farol(1, 10, 10, self.valor[0] + 6, self.valor[1] + 4.7, self.valor[2] + 0)
-        self.draw_escapamento(self.valor[0] + -2, self.valor[1] + 3, self.valor[2] + 1, 5, 1.5, 1)
+        self.roda.draw(self.position[0] + self.valor[0] + 6, self.position[1] + self.valor[1] + 1,self.position[2] + self.valor[2] + 0, 5)
+        self.roda.draw(self.position[0] + self.valor[0] - 3, self.position[1] +  self.valor[1] + 1,self.position[2] +  self.valor[2] + 0, 5)
+        self.corpo.draw(self.position[0] + self.valor[0] + 3, self.position[1] + self.valor[1] + 1.5,self.position[2] +  self.valor[2] + 0, 5)
+        self.peca.draw(self.position[0] + self.valor[0] + 4,self.position[1] + self.valor[1] + 2,self.position[2] + self.valor[2] + 0.4, 4, 0.5, 0.25)
+        self.peca.draw(self.position[0] + self.valor[0] + 4,self.position[1] + self.valor[1] + 2,self.position[2] + self.valor[2] + -0.4, 4, 0.5, 0.25)
+        self.guidon.draw(self.position[0] + self.valor[0] + 4,self.position[1] + self.valor[1] + 4,self.position[2] + self.valor[2] + 0)
+        self.farol.draw(1, 10, 10, self.position[0] + self.valor[0] + 6, self.position[1] + self.valor[1] + 4.7, self.position[2] + self.valor[2] + 0)
+        self.escapamento.draw(self.position[0] + self.valor[0] + -2, self.position[1] + self.valor[1] + 3, self.position[2] + self.valor[2] + 1, 5, 1.5, 1)
 
 
     def mostrar(self):
