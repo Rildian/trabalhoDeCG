@@ -9,6 +9,7 @@ class Obstaculos:
         self.position = initial_position
         self.valor = initial_position
         self.caminhao = Caminhao([self.position[0] + self.valor[0] + 0, self.position[1] + self.valor[1] + 4.5, self.position[2] + self.valor[2] - 8])
+        self.caminhao2 = Caminhao([self.position[0] + self.valor[0] + 100, self.position[1] + self.valor[1] + 4.5, self.position[2] + self.valor[2] + 8])
         self.p = 0
         self.comeco = glm.vec3(800, 0, 0)
         self.fim = glm.vec3(-800, 0, 0)
@@ -27,8 +28,10 @@ class Obstaculos:
     def update(self):
         self.valor = glm.mix(self.comeco,self.fim, self.p)
         self.caminhao.update(self.comeco, self.fim, self.p)
+        self.caminhao2.update(self.comeco, self.fim, self.p)
         self.mover(self.veloc)
 
     def draw(self):
         self.caminhao.draw()
+        self.caminhao2.draw()
 
