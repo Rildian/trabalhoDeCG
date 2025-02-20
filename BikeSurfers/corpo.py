@@ -40,7 +40,7 @@ class Corpo:
         self.angulo = (self.angulo + 0.03) % 360
 
     def draw(self, x, y, z, tamanho):
-        glColor3f(0, 0.5, 0.5)
+        glColor3f(1, 0.0, 0.0)
         glPushMatrix()
         glTranslatef(self.position[0] + self.valor[0] + x, self.position[1] + self.valor[1] + y, self.position[2] + self.valor[2] + z)
         glScale(tamanho, tamanho, tamanho)

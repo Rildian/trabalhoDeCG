@@ -7,6 +7,8 @@ from moto import Moto
 from cenario import Cenario
 from camera import Camera
 from obstaculos import Obstaculos
+import glm
+from pyglm import *
 
 moto = None
 
@@ -71,7 +73,7 @@ def process_input(camera):
 def render(camera):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     camera.update_view()
-    sergio.draw(0, 0, 0, 5)
+    #sergio.draw(0, 0, 0, 5)
     moto.draw()
     cenario.draw()
     obstaculo.draw()
@@ -96,9 +98,9 @@ def main():
     setup_callbacks(window, camera)
     
     moto = Moto()
-    sergio = Cubo(texture_path="textura.png", initial_position=[-360, 0, 0])
+    #sergio = Cubo(texture_path="textura.png", initial_position=[-360, 0, 0])
     cenario = Cenario()
-    obstaculo = Obstaculos()
+    obstaculo = Obstaculos(initial_position=glm.vec3(0.0, 0.0, 0.0)) 
     
     while not glfw.window_should_close(window):
         process_input(camera)
