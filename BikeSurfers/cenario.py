@@ -15,20 +15,25 @@ class Cenario:
     def __init__(self, initial_position=[0.0, 0.0, 0.0]):
         self.position = initial_position
         self.valor = initial_position
-        self.placa = Placa(texture_path = "Pare.jpg")
+
         self.chao1 = Chao(texture_path = "asfalto.jpg")
         self.chao2 = Chao(texture_path = "asfalto.jpg")
+
         self.ceu = Ceu(texture_path = "skybox.png")
         self.pos = [-800,0,0]
         self.pos3 = [-1600, 0, 0]
         self.pos2 = [0,0,0]
+
         self.terra1 = Terra(texture_path = "skybox.png")
         self.terra2 = Terra(texture_path = "skybox.png")
+
         self.cacto = Cacto(texture_path = "cacto.png")
         self.cacto2 = Cacto(texture_path = "cacto.png")
         self.velocidade = 1
+
         self.cactos_posicoes = self.gerar_posicoes_cactos()
         self.outdoor = Outdoor(texture_path = "OUT door.png")
+        self.placa = Placa(texture_path="Pare.jpg")
 
     def mover(self, x: float, y: float, z: float):
         self.valor[0] += x
