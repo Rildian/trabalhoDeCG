@@ -138,5 +138,5 @@ class Caminhao:
         self.desenhar_roda(pos.x - 15, pos.y - 3, pos.z - 6.5, 10)  # frente esquerda
         self.desenhar_roda(pos.x - 15, pos.y - 3, pos.z + 6.5, 10)  # frente direita
 
-        self.desenhar_roda(pos.x + 20, pos.y- 3, pos.z - 6.5, 10) #traseira esquerda
+        self.desenhar_roda(pos.x + 20, pos.y- 3, pos.z - 6.5, 10) # traseira esquerda
         self.desenhar_roda(pos.x + 20, pos.y- 3, pos.z + 6.5, 10) # traseira direita
