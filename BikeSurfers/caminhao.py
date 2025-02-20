@@ -4,11 +4,13 @@ from OpenGL.GLUT import *
 import math
 
 class Caminhao:
-    def __init__(self, initial_position=glm.vec3(0.0, 0.0, 0.0)):
+    def __init__(self, initial_position = glm.vec3(0.0, 0.0, 0.0), comeco = glm .vec3(0,0,0), fim =glm .vec3(-1,0,0)):
         self.position = initial_position
         self.valor = glm.vec3(0, 0, 0)
         self.angulo_roda = 0.0
         self.angulo_corpo = 0.0
+        self.inicio = comeco  + self.position 
+        self.fim = fim  + self.position 
         
         # Rodas
         self.lados_roda = 8
@@ -34,8 +36,8 @@ class Caminhao:
             [2, 3, 7, 6], [0, 3, 7, 4], [1, 2, 6, 5]
         ]
 
-    def mover(self, x: float, y: float, z: float):
-        self.valor += glm.vec3(x, y, z)
+    def get_trajeto(self):
+        return self.inicio, self.fim
 
     def calcular_vertices_roda(self):
         altura = 0.2
@@ -50,10 +52,10 @@ class Caminhao:
         return vertices
 
     def get_posicao(self):
-        return self.position + self.valor
+        return self.position 
 
-    def update(self, c, f, p):
-        self.valor = glm.mix(c + self.position, f + self.position, p)
+    def update(self, p):
+        self.position = glm.mix(self.inicio ,self.fim, p)
         self.angulo_roda = (self.angulo_roda + 2) % 360
 
     def desenhar_roda(self, x, y, z, tamanho):
@@ -127,16 +129,16 @@ class Caminhao:
         glPopMatrix()
 
     def draw(self):
-        pos = self.position + self.valor
+        pos = self.position 
         # Container (parte de tras)
-        self.desenhar_container(pos.x + 10, pos.y + 5, pos.z, 1, 1, 1)
+        self.desenhar_container(pos[0] + 10, pos[1] + 5, pos[2], 1, 1, 1)
         
         # Corpo (parte da frente)
-        self.desenhar_corpo(pos.x - 15, pos.y + 3.5, pos.z, 1)
+        self.desenhar_corpo(pos[0] - 15, pos[1] + 3.5, pos[2], 1)
         
         # Rodas
-        self.desenhar_roda(pos.x - 15, pos.y - 3, pos.z - 6.5, 10)  # frente esquerda
-        self.desenhar_roda(pos.x - 15, pos.y - 3, pos.z + 6.5, 10)  # frente direita
+        self.desenhar_roda(pos[0] - 15, pos[1] - 3, pos[2] - 6.5, 10)  # frente esquerda
+        self.desenhar_roda(pos[0] - 15, pos[1] - 3, pos[2] + 6.5, 10)  # frente direita
 
-        self.desenhar_roda(pos.x + 20, pos.y- 3, pos.z - 6.5, 10) # traseira esquerda
-        self.desenhar_roda(pos.x + 20, pos.y- 3, pos.z + 6.5, 10) # traseira direita
+        self.desenhar_roda(pos[0] + 20, pos[1]- 3, pos[2] - 6.5, 10) #traseira esquerda
+        self.desenhar_roda(pos[0] + 20, pos[1]- 3, pos[2] + 6.5, 10) # traseira direita

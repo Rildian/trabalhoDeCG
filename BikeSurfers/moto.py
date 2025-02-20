@@ -34,7 +34,7 @@ class Moto:
 
     def update(self):
         self.valor = glm.mix([-360,0,-23],[-360,0,23], self.p)
-        print(f"Moto{self.valor}")
+        #print(f"Moto{self.valor}")
         self.roda.update()
 
     def draw(self):

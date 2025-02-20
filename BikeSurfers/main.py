@@ -19,6 +19,7 @@ class Game:
         self.keys = {}
         self.game_started = False
         self.pause_game = False
+        self.colisao = False
         self.camera = Camera()
 
         self.init_window()
@@ -117,6 +118,25 @@ class Game:
         if glfw.get_key(self.window, glfw.KEY_D) == glfw.PRESS:
             self.moto.mover(0.005)
 
+    def bateu(self):
+        motoPosicao = self.moto.get_posicao()
+        
+        for caminhao in self.obstaculo.caminhoes:  # Itera sobre a lista de caminhões
+            caminhaoInicio, caminhaoFim = caminhao.get_trajeto()
+            
+            print(f" Rota: {caminhaoFim[2]}")
+            print(f" Moto: {motoPosicao[2]}")
+            print(f" Caminhao: {caminhao.valor[2] + caminhao.position[2]} ")
+            
+            pontoDeColisao = (motoPosicao[0] - caminhaoInicio[0]) / (caminhaoFim[0] - caminhaoInicio[0])
+            
+            if (self.obstaculo.get_p() - 0.02 <= pontoDeColisao <= self.obstaculo.get_p() + 0.02) \
+                    and (caminhaoFim[2] - 8 <= motoPosicao[2] <= caminhaoFim[2] + 8):
+                self.colisao = True
+                print("Bateu")
+                break  # Sai do loop ao detectar colisão
+
+
     def render_game(self, camera):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         self.camera.update_view()
@@ -125,6 +145,7 @@ class Game:
         self.cenario.draw()
 
     def update_game(self):
+        self.bateu()
         self.moto.update()
         self.cenario.update()
         self.obstaculo.update()
@@ -158,10 +179,9 @@ class Game:
     def run(self):
         while not glfw.window_should_close(self.window):
             self.process_input()
-            
             if self.game_started:
                 self.render_game(self.camera)
-                if not self.pause_game:
+                if not self.pause_game and not self.colisao:
                     self.update_game()
             else:
                 self.render_menu()
