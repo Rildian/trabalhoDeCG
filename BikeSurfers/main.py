@@ -18,6 +18,7 @@ class Game:
         self.window = None
         self.keys = {}
         self.game_started = False
+        self.pause_game = False
         self.camera = Camera()
 
         self.init_window()
@@ -63,6 +64,14 @@ class Game:
     def key_callback(self, window, key, scancode, action, mods):
         if action == glfw.PRESS:
             self.keys[key] = True
+            if self.game_started:
+                if glfw.get_key(self.window, glfw.KEY_ESCAPE) == glfw.PRESS:
+                    self.camera.toggle_cursor(self.window)
+                if glfw.get_key(self.window, glfw.KEY_TAB) == glfw.PRESS:
+                    if self.pause_game:
+                        self.pause_game = False
+                    else:
+                        self.pause_game = True
         elif action == glfw.RELEASE:
             self.keys[key] = False
 
@@ -94,7 +103,7 @@ class Game:
 
     def process_input(self):
         self.camera.process_input(self.keys)
-
+        
         if glfw.get_key(self.window, glfw.KEY_RIGHT) == glfw.PRESS:
             self.sergio.mover(0, 0, 0.1)
         if glfw.get_key(self.window, glfw.KEY_LEFT) == glfw.PRESS:
@@ -152,7 +161,8 @@ class Game:
             
             if self.game_started:
                 self.render_game(self.camera)
-                self.update_game()
+                if not self.pause_game:
+                    self.update_game()
             else:
                 self.render_menu()
 
