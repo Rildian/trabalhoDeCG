@@ -240,8 +240,6 @@ class Game:
         glMatrixMode(GL_MODELVIEW)
 
 
-
-
     def run(self):
         while not glfw.window_should_close(self.window):
             self.process_input()
