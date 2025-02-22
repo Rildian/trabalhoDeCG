@@ -79,7 +79,7 @@ class Cenario:
         return posicoes
 
     def draw(self):
-        self.placa.draw(self.valor[0] + 800, self.valor[1] + 10, self.valor[2] + 25, 10)
+        self.placa.draw(self.valor[0] + 800, self.valor[1] + 10, self.valor[2] + 30, 10)
         self.ceu.draw(self.valor[0] + 0, self.valor[1] + 0, self.valor[2] + 0 , 800)
         self.chao1.draw(0 ,0, 0)
         self.chao2.draw(800 ,0, 0)

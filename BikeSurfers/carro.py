@@ -3,39 +3,35 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 import math
 
-class Caminhao:
+class Carro:
     def __init__(self, initial_position = glm.vec3(0.0, 0.0, 0.0), comeco = glm .vec3(0,0,0), fim =glm .vec3(-1,0,0)):
         self.position = initial_position
-        self.position += glm.vec3(14, 0, 0)
-
         self.valor = glm.vec3(0, 0, 0)
         self.angulo_roda = 0.0
         self.inicio = comeco  + self.position 
         self.fim = fim  + self.position 
+        self.vertices = [
+            [-1, -1, -1],  # Frente inferior esquerda
+            [1, -1, -1],   # Frente inferior direita
+            [1, 1, -1],    # Frente superior direita
+            [-1, 1, -1],   # Frente superior esquerda
+            [-1, -1, 1],   # Trás inferior esquerda
+            [1, -1, 1],    # Trás inferior direita
+            [1, 1, 1],     # Trás superior direita
+            [-1, 1, 1],    # Trás superior esquerda
+        ]
+        self.faces = [
+            [0, 1, 2, 3],  # Face frontal
+            [4, 5, 6, 7],  # Face traseira
+            [0, 1, 5, 4],  # Face inferior
+            [2, 3, 7, 6],  # Face superior
+            [0, 3, 7, 4],  # Face esquerda
+            [1, 2, 6, 5],  # Face direita
+        ]
         
         # Rodas
         self.lados_roda = 8
         self.vertices_roda = self.calcular_vertices_roda()
-        
-        # Corpo (parte da frente)
-        self.vertices_corpo = [
-            [-6, -6, -8], [6, -6, -8], [6, 6, -8], [-6, 6, -8],
-            [-6, -6, 8], [6, -6, 8], [6, 6, 8], [-6, 6, 8]
-        ]
-        self.faces_corpo = [
-            [0, 1, 2, 3], [4, 5, 6, 7], [0, 1, 5, 4],
-            [2, 3, 7, 6], [0, 4, 7, 3], [5, 1, 2, 6]
-        ]
-        
-        # Côntainer (parte de tras)
-        self.vertices_container = [
-            [-18, -8, -8], [18, -8, -8], [18, 8, -8], [-18, 8, -8],
-            [-18, -8, 8], [18, -8, 8], [18, 8, 8], [-18, 8, 8]
-        ]
-        self.faces_container = [
-            [0, 1, 2, 3], [4, 5, 6, 7], [0, 1, 5, 4],
-            [2, 3, 7, 6], [0, 3, 7, 4], [1, 2, 6, 5]
-        ]
 
     def get_trajeto(self):
         return self.inicio, self.fim
@@ -102,43 +98,38 @@ class Caminhao:
                 glVertex3fv(self.vertices_roda[vertex])
         glEnd()
 
-    def desenhar_corpo(self, x, y, z, tamanho):
+    def draw_chassi(self,x, y, z, tam):
         glPushMatrix()
         glTranslatef(x, y, z)
-        glScale(tamanho, tamanho, tamanho)
-        glColor3f(0.5, 0.5, 0.5)
-        
+        glScale(12 * tam, 3 * tam, 5 * tam)
+
+        glColor3f(0.3, 1, 0.3)
         glBegin(GL_QUADS)
-        for face in self.faces_corpo:
-            for vertex in face:
-                glVertex3fv(self.vertices_corpo[vertex])
+        for i, face in enumerate(self.faces):
+            for j, vertex in enumerate(face):
+                glVertex3fv(self.vertices[vertex])  # Define a posição do vértice
         glEnd()
         glPopMatrix()
 
-    def desenhar_container(self, x, y, z, sx, sy, sz):
         glPushMatrix()
-        glTranslatef(x, y, z)
-        glScale(sx * 1, sy * 1, sz * 1)
-        glColor3f(0, 0.5, 0.5)
-        
+        glTranslatef(x+2, y+4, z)
+        glScale(10 * tam, 3 * tam, 5 * tam)
+
+        glColor3f(0.3, 1, 0.3)
         glBegin(GL_QUADS)
-        for face in self.faces_container:
-            for vertex in face:
-                glVertex3fv(self.vertices_container[vertex])
+        for i, face in enumerate(self.faces):
+            for j, vertex in enumerate(face):
+                glVertex3fv(self.vertices[vertex])  # Define a posição do vértice
         glEnd()
         glPopMatrix()
 
     def draw(self):
         pos = self.position 
-        # Container (parte de tras)
-        self.desenhar_container(pos[0] + 10, pos[1] + 5, pos[2], 1, 1, 1)
-        
-        # Corpo (parte da frente)
-        self.desenhar_corpo(pos[0] - 15, pos[1] + 3.5, pos[2], 1)
-        
-        # Rodas
-        self.desenhar_roda(pos[0] - 15, pos[1] - 3, pos[2] - 6.5, 10)  # frente esquerda
-        self.desenhar_roda(pos[0] - 15, pos[1] - 3, pos[2] + 6.5, 10)  # frente direita
 
-        self.desenhar_roda(pos[0] + 20, pos[1]- 3, pos[2] - 6.5, 10) #traseira esquerda
-        self.desenhar_roda(pos[0] + 20, pos[1]- 3, pos[2] + 6.5, 10) # traseira direita
+        self.draw_chassi(pos[0], pos[1] + 5, pos[2], 1)
+        # Rodas
+        self.desenhar_roda(pos[0] - 6, pos[1] + 3 , pos[2] - 6, 8)  # frente esquerda
+        self.desenhar_roda(pos[0] - 6, pos[1 ]+ 3 , pos[2] + 6, 8)  # frente direita
+
+        self.desenhar_roda(pos[0] + 6, pos[1] + 3, pos[2] - 6, 8) #traseira esquerda
+        self.desenhar_roda(pos[0] + 6, pos[1] + 3, pos[2] + 6, 8) # traseira direita

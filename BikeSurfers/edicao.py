@@ -1,5 +1,6 @@
 from OpenGL.GL import *
 import glm
+from texture import Texture 
 
 class Edicao:
     COLORS = {
@@ -15,7 +16,18 @@ class Edicao:
         [0.05, -0.05, 0],
         [-0.05, -0.05, 0] 
     ]
+
+    verticesB= [
+        [-0.25, 0.05, 0],
+        [0.25, 0.05, 0],
+        [0.25, -0.05, 0],
+        [-0.25, -0.05, 0] 
+    ]
     
+    tex_coords = [
+        (0, 1), (1, 1), (1, 0), (0, 0)  # Mantendo a ordem correta
+    ]
+
     def __init__(self, initial_position=glm.vec3(0.0, 0.0, 0.0)):
         self.position = initial_position
         self.grid_width = 16  # Número de colunas na grid
@@ -23,11 +35,12 @@ class Edicao:
         self.square_size = 0.1  # Tamanho de cada quadrado
         self.spacing = 0.005    # Espaçamento entre os quadrados
         self.cor = 1
+        self.textura = Texture("jogar.png")
         self.matriz = [
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    ]
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        ]
         
         # Inicializa a grid com a cor cinza por padrão
         self.grid_colors = [[self.COLORS[0] for _ in range(self.grid_width)] for _ in range(self.grid_height)]
@@ -40,7 +53,6 @@ class Edicao:
         else:
             self.grid_colors[y][x] = self.COLORS[color_id]
             self.matriz[y][x] = color_id
-        print(self.matriz[y])
 
     def set_cor(self,x):
         self.cor = x
@@ -112,4 +124,22 @@ class Edicao:
         for i in range(4):
             glVertex3f(*self.vertices[i]) 
         glEnd()
+        glPopMatrix()
+
+        glPushMatrix()
+        glTranslatef(0, -0.5, 0) 
+
+        glEnable(GL_TEXTURE_2D)
+        self.textura.bind()  
+
+        glBegin(GL_QUADS)
+        for i in range(4):
+            glTexCoord2f(*self.tex_coords[i])  # Aplica coordenadas UV corretas
+            glVertex3f(*self.verticesB[i])  # Define posição do vértice
+        glEnd()
+
+
+        self.textura.unbind()
+        glDisable(GL_TEXTURE_2D)
+
         glPopMatrix()

@@ -1,4 +1,4 @@
-import glfw
+
 import glm
 from OpenGL.GL import *
 from OpenGL.GLUT import *
@@ -6,11 +6,11 @@ import numpy as np
 import math
 
 class Moto:
-    def __init__(self, initial_position= glm.vec3(0.0, 0.0, 0.0)):
+    def __init__(self, initial_position= glm.vec3(0.0, 0.0, 0.0),comeco = glm .vec3(0,0,0), fim = glm .vec3(-1,0,0)):
         self.position = initial_position
-        self.p = 0.5
         self.angulo = 0.0
-        self.valor = glm.vec3(0,0,0)
+        self.comeco = comeco + self.position 
+        self.fim = fim + self.position 
         self.verticesRoda = self.calcular_vertices_roda(8)
         self.facesRoda = self.calcular_faces_roda(8)
         self.verticesChassi = self.calcular_vertices_chassi()
@@ -147,16 +147,14 @@ class Moto:
                 glVertex3f(x * zr1, y * zr1, z1)
             glEnd()
 
-    def mover(self,x):
-        if self.p + x >= 0 and self.p + x <= 1:
-            self.p += x
-
     def get_posicao(self):
         return self.position + self.valor
+    
+    def get_trajeto(self):
+        return self.comeco, self.fim
 
-    def update(self):
-        self.valor = glm.mix([-360,0,-26],[-360,0,26], self.p)
-        #print(f"Moto{self.valor}")
+    def update(self, p):
+        self.position = glm.mix(self.comeco ,self.fim, p)
         self.angulo = (self.angulo - 2) % 360
 
     def draw_roda(self, x, y, z, tamanho):
@@ -376,18 +374,17 @@ class Moto:
         glPopMatrix()
 
     def draw(self):
-        self.draw_roda(self.position[0] + self.valor[0] + 6, self.position[1] + self.valor[1] + 1,self.position[2] + self.valor[2] + 0, 5)
-        self.draw_roda(self.position[0] + self.valor[0] - 3, self.position[1] +  self.valor[1] + 1,self.position[2] +  self.valor[2] + 0, 5)
+        glPushMatrix()  # Salva a matriz de transformação atual
+        glTranslatef(self.position[0], self.position[1], self.position[2])  # Move a moto para a posição correta
+        glRotatef(180, 0, 1, 0)  # Rotaciona 180 graus no eixo Y
+        
+        self.draw_roda(6, 1, 0, 5)
+        self.draw_roda(-3, 1, 0, 5)
+        self.draw_chassi(3, 1.5, 0, 5)
+        self.draw_peca(4, 2, 0.4, 4, 0.5, 0.25)
+        self.draw_peca(4, 2, -0.4, 4, 0.5, 0.25)
+        self.draw_guidon(4, 4, 0)
+        self.draw_farol(1, 10, 10, 6, 4.5, 0)
+        self.draw_escapamento(-2, 3, 1, 5, 1.5, 1)
 
-        self.draw_chassi(self.position[0] + self.valor[0] + 3, self.position[1] + self.valor[1] + 1.5,self.position[2] +  self.valor[2] + 0, 5)
-
-        self.draw_peca(self.position[0] + self.valor[0] + 4,self.position[1] + self.valor[1] + 2,self.position[2] + self.valor[2] + 0.4, 4, 0.5, 0.25)
-        self.draw_peca(self.position[0] + self.valor[0] + 4,self.position[1] + self.valor[1] + 2,self.position[2] + self.valor[2] + -0.4, 4, 0.5, 0.25)
-
-        self.draw_guidon(self.position[0] + self.valor[0] + 4,self.position[1] + self.valor[1] + 4,self.position[2] + self.valor[2] + 0)
-        self.draw_farol(1, 10, 10, self.position[0] + self.valor[0] + 6, self.position[1] + self.valor[1] + 4.7, self.position[2] + self.valor[2] + 0)
-        self.draw_escapamento(self.position[0] + self.valor[0] + -2, self.position[1] + self.valor[1] + 3, self.position[2] + self.valor[2] + 1, 5, 1.5, 1)
-
-
-    def mostrar(self):
-        print(self.valor)
+        glPopMatrix()  # Restaura a matriz original para evitar que outras partes da cena sejam afetadas
