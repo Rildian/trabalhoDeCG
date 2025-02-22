@@ -8,6 +8,7 @@ from cenario import Cenario
 from camera import Camera
 from menu import Menu
 from obstaculos import Obstaculos
+from edicao import Edicao
 
 
 class Game:
@@ -18,6 +19,7 @@ class Game:
         self.window = None
         self.keys = {}
         self.game_started = False
+        self.edicao_started = False 
         self.pause_game = False
         self.colisao = False
         self.camera = Camera()
@@ -31,6 +33,7 @@ class Game:
         self.cenario = Cenario()
         self.obstaculo = Obstaculos()
         self.menu = Menu()
+        self.edicao = Edicao()
 
     def init_window(self):
         if not glfw.init():
@@ -77,30 +80,71 @@ class Game:
             self.keys[key] = False
 
     def mouse_button_callback(self, window, button, action, mods):
-        if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.PRESS:
-            # Obtém o tamanho da janela
-            width, height = glfw.get_window_size(self.window)
-            
-            # Calcula o centro da tela
-            center_x, center_y = width // 2, height // 2
+        if not self.game_started and not self.edicao_started:
+            if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.PRESS:
+                # Obtém o tamanho da janela
+                width, height = glfw.get_window_size(self.window)
+                
+                # Calcula o centro da tela
+                center_x, center_y = width // 2, height // 2
+                center_y += 425
+                
+                # Obtém a posição do mouse
+                mouse_x, mouse_y = glfw.get_cursor_pos(self.window)
 
-            center_y += 425
-            
-            # Obtém a posição do mouse
-            mouse_x, mouse_y = glfw.get_cursor_pos(self.window)
-            print(mouse_x)
-            print(mouse_y)
-            
-            # Define uma margem de tolerância para o clique (exemplo: 50 pixels)
-            tolerance_x = 150
-            tolerance_y = 50
-            
+                # Define uma margem de tolerância para o clique (exemplo: 50 pixels)
+                tolerance_x = 150
+                tolerance_y = 50
+                
 
-            # Verifica se o clique está dentro da área central
-            if (center_x - tolerance_x <= mouse_x <= center_x + tolerance_x and 
-                center_y - tolerance_y <= mouse_y <= center_y + tolerance_y):
-                self.game_started = True  # Muda para o modo de jogo
+                # Verifica se o clique está dentro da área central
+                if (center_x - tolerance_x <= mouse_x <= center_x + tolerance_x and 
+                    center_y - tolerance_y <= mouse_y <= center_y + tolerance_y):
+                    self.game_started = True  # Muda para o modo de jogo
 
+        elif self.edicao_started:
+            if button == glfw.MOUSE_BUTTON_LEFT and action == glfw.PRESS:
+                # Obtém o tamanho da janela
+                width, height = glfw.get_window_size(self.window)
+                
+                # Obtém a posição do mouse
+                mouse_x, mouse_y = glfw.get_cursor_pos(self.window)
+                
+                # Define os limites da grid
+                grid_x_start, grid_y_start = 56, 600
+                grid_x_end, grid_y_end = 900, 450
+                
+                # Calcula o tamanho de cada célula
+                cell_width = (grid_x_end - grid_x_start) / 16
+                cell_height = (grid_y_start - grid_y_end) / 3
+
+                tolerancia = 25
+                
+                # Verifica se o clique está dentro da grid
+                if grid_x_start <= mouse_x <= grid_x_end and grid_y_end <= mouse_y <= grid_y_start:
+                    # Converte a posição do clique para coordenadas da grid
+                    x = int((mouse_x - grid_x_start) / cell_width)
+                    y = int((grid_y_start - mouse_y) / cell_height)
+                    
+                    if self.edicao.get_cor() == self.edicao.matriz[y][x]:
+                        if self.edicao.matriz[y][x] == 3:
+                            self.edicao.set_square_color(y, x, 0)
+                            self.edicao.set_square_color(y, x+1, 0)
+                        else:
+                            self.edicao.set_square_color(y, x, 0)
+                    elif not self.edicao.matriz[y][x-1] == 3 and self.edicao.matriz[y][x] == 0:
+                        self.edicao.set_square_color(y, x, self.edicao.get_cor())
+
+                if  500 - tolerancia <= mouse_x <= 500 + tolerancia and 350 - tolerancia <= mouse_y <= 350 + tolerancia:
+                    self.edicao.set_cor(1)
+
+                if  350 - tolerancia <= mouse_x <= 350 + tolerancia and 350 - tolerancia <= mouse_y <= 350 + tolerancia:
+                    self.edicao.set_cor(3)
+
+                if  650 - tolerancia <= mouse_x <= 650 + tolerancia and 350 - tolerancia <= mouse_y <= 350 + tolerancia:
+                    self.edicao.set_cor(2)
+
+                
 
     def process_input(self):
         self.camera.process_input(self.keys)
@@ -175,6 +219,28 @@ class Game:
         glPopMatrix()
         glMatrixMode(GL_MODELVIEW)
 
+    def render_edicao(self):
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+        # Salva a matriz de projeção e muda para uma projeção ortográfica (2D)
+        glMatrixMode(GL_PROJECTION)
+        glPushMatrix()
+        glLoadIdentity()
+        glOrtho(-1, 1, -1, 1, -1, 1)  # Define uma projeção ortográfica
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glLoadIdentity()
+
+        self.edicao.draw() 
+
+        # Restaura as matrizes para a configuração anterior
+        glPopMatrix()
+        glMatrixMode(GL_PROJECTION)
+        glPopMatrix()
+        glMatrixMode(GL_MODELVIEW)
+
+
+
 
     def run(self):
         while not glfw.window_should_close(self.window):
@@ -183,6 +249,8 @@ class Game:
                 self.render_game(self.camera)
                 if not self.pause_game and not self.colisao:
                     self.update_game()
+            elif self.edicao_started:
+                self.render_edicao()
             else:
                 self.render_menu()
 

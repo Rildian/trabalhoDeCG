@@ -14,10 +14,10 @@ class Chao:
 
     # Definição dos vértices do chão
     vertices = [
-        [400, -1, -25],
-        [400, -1, 25],
-        [-400, -1, 25],
-        [-400, -1, -25]
+        [400, -1, -30],
+        [400, -1, 30],
+        [-400, -1, 30],
+        [-400, -1, -30]
     ]
 
     # Coordenadas de textura (UV) para o chão

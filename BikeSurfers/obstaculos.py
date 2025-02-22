@@ -16,15 +16,21 @@ class Obstaculos:
         
         self.caminhoes = [
             Caminhao([
-                self.position[0] + self.valor[0] + 50,
+                self.position[0] + self.valor[0] + 200,
                 self.position[1] + self.valor[1] + 3.5,
-                self.position[2] + self.valor[2] - 16
+                self.position[2] + self.valor[2] - 0
             ], self.comeco, self.fim),
 
             Caminhao([
                 self.position[0] + self.valor[0] + 200 ,
                 self.position[1] + self.valor[1] + 3.5,
                 self.position[2] + self.valor[2] + 0
+            ], self.comeco, self.fim),
+
+            Caminhao([
+                self.position[0] + self.valor[0] + 250 ,
+                self.position[1] + self.valor[1] + 3.5,
+                self.position[2] + self.valor[2] + 18
             ], self.comeco, self.fim)
         ]
 

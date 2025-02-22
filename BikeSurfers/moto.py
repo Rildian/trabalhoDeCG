@@ -155,7 +155,7 @@ class Moto:
         return self.position + self.valor
 
     def update(self):
-        self.valor = glm.mix([-360,0,-23],[-360,0,23], self.p)
+        self.valor = glm.mix([-360,0,-28],[-360,0,28], self.p)
         #print(f"Moto{self.valor}")
         self.angulo = (self.angulo - 2) % 360
 

@@ -8,16 +8,12 @@ class Menu:
         [-1, 1, 0],
         [1, 1, 0],
         [1, -1, 0],
-         [-1, -1, 0]
-        
+        [-1, -1, 0] 
     ]
 
     tex_coords = [
         (0, 1), (1, 1), (1, 0), (0, 0)  # Mantendo a ordem correta
     ]
-
-
-
 
     def __init__(self, texture_path="menu.png", initial_position=glm.vec3(0.0, 0.0, 0.0)):
         self.position = initial_position
@@ -26,12 +22,7 @@ class Menu:
     def draw(self):
         glPushMatrix()
         glTranslatef(self.position.x, self.position.y, self.position.z)
-
-        # Verifica se a textura foi carregada corretamente
-        if not self.texture.texture_id:
-            print("Erro: Textura não carregada corretamente!")
-            return
-        
+      
         glEnable(GL_TEXTURE_2D)
         self.texture.bind()  
 
