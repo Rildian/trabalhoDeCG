@@ -80,4 +80,3 @@ class Placa:
         self.draw_placa(x,y+2,z,tamanho)
         self.draw_peca(self.position[0] + self.valor[0] + x + 0.6, self.position[1] + self.valor[1] + y - 3.2, self.position[2] + self.valor[2] + z, tamanho * 0.1, tamanho * 1.5, tamanho * 0.1)
         
-
