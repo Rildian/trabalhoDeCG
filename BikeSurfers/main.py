@@ -3,6 +3,7 @@ import glm
 import pygame
 import sys
 import time
+import random
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from PIL import Image
@@ -15,6 +16,7 @@ from obstaculos import Obstaculos
 from edicao import Edicao
 from derrota import Derrota
 from text_display import TextDisplay
+from moeda import Moeda
 
 class Game:
     def __init__(self, width=1000, height=1000, title="Elf Stunden auf der Rennstrecke"):
@@ -33,7 +35,13 @@ class Game:
         self.init_window()
         self.init_opengl()
         self.setup_callbacks()
-
+        self.moedas = []
+        for i in range(10):
+            # Exemplo: posição aleatória dentro de um intervalo na pista
+            pos_x = random.uniform(-350, 350)
+            pos_y = 1.5  # um pouco acima do chão
+            pos_z = random.uniform(-20, 20)
+            self.moedas.append(Moeda(initial_position=[pos_x, pos_y, pos_z]))
         self.moto = Moto()
         self.sergio = Cubo(texture_path="textura.png", initial_position=[-360, 0, 0])
         self.cenario = Cenario()
@@ -233,12 +241,16 @@ class Game:
         self.obstaculo.draw()
         self.cenario.draw()
         self.text_display.render(f"Pontos: {self.pontos}")
+        for moeda in self.moedas:
+            moeda.draw(0, 0, 0, 5)
 
     def update_game(self):
         self.contador += 1
         self.moto.update()
         self.cenario.update()
         self.obstaculo.update()
+        for moeda in self.moedas:
+            moeda.update()
         self.pontos = int(glfw.get_time())
         self.camera.set_position(
             self.moto.get_posicao()[0] - 20,
