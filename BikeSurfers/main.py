@@ -1,5 +1,8 @@
 import glfw
 import glm
+import pygame
+import sys
+import time
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from PIL import Image
@@ -11,7 +14,7 @@ from menu import Menu
 from obstaculos import Obstaculos
 from edicao import Edicao
 from derrota import Derrota
-
+from text_display import TextDisplay
 
 class Game:
     def __init__(self, width=1000, height=1000, title="Elf Stunden auf der Rennstrecke"):
@@ -39,6 +42,8 @@ class Game:
         self.edicao = Edicao()
         self.derrota = Derrota()
         self.contador = 0
+        self.text_display = TextDisplay(width, height)
+        self.pontos = 0
 
     def init_window(self):
         if not glfw.init():
@@ -144,6 +149,7 @@ class Game:
                         self.edicao.set_square_color(y, x, self.edicao.get_cor())
 
                 if  500 - tolerancia_x <= mouse_x <= 500 + tolerancia_x and 750 - tolerancia_y <= mouse_y <= 750 + tolerancia_y:
+                    self.pontos = 0
                     self.obstaculo.set_matriz(self.edicao.matriz)
                     self.obstaculo.set_obstaculos()
                     self.game_started = True
@@ -226,12 +232,14 @@ class Game:
         self.moto.draw()
         self.obstaculo.draw()
         self.cenario.draw()
+        self.text_display.render(f"Pontos: {self.pontos}")
 
     def update_game(self):
         self.contador += 1
         self.moto.update()
         self.cenario.update()
         self.obstaculo.update()
+        self.pontos = int(glfw.get_time())
         self.camera.set_position(
             self.moto.get_posicao()[0] - 20,
             self.moto.get_posicao()[1] + 10,
